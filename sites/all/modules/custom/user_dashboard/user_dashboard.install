@@ -1,0 +1,120 @@
+<?php
+
+
+/**
+ * Implements hook_install().
+ */
+function user_dashboard_install() {
+  $t = get_t();
+  
+  /**** STEP 1 - Create and save a new content object ****/
+
+  // machine name of the content type
+  $name = 'dashboard';
+
+  // define the node type
+  $dashboard = array(
+    'type' => $name,
+    'name' => $t('Dashboard'),
+    'base' => 'node_content',
+    'title_label' => $t('Dashboard Title'),
+    'description' => $t('Use this content type to create a user dashboard.'),
+    'custom' => TRUE,
+  );
+
+  // set other node defaults not declared above
+  $content_type = node_type_set_defaults($dashboard);
+
+  // add the body field
+  // node_add_body_field($content_type, $t('Description'));
+
+  // save the content type
+  node_type_save($content_type);
+  
+  /**** STEP 2 - update persistant variables with settings ****/
+
+  // add persistent variables that control settings
+  variable_set('additional_settings__active_tab_' . $name, 'edit-menu');
+  variable_set('node_preview_' . $name, 0); // 0 = disabled, 1 = optional, 2 = required
+  variable_set('node_options_' . $name, array(0 => 'status')); // array(0 => 'status', 1 => 'promote', 2 => 'sticky', 3 => 'revision') remove to uncheck
+  variable_set('node_submitted_' . $name, 0); // 1 = Display author and date information, 0 = none
+  variable_set('menu_options_' . $name, array());
+  variable_set('menu_parent_' . $name, 'main-menu:0');
+  
+  //comment
+  variable_set('comment_anonymous_'.$name, 0);
+  variable_set('comment_default_mode_'.$name,1);
+  variable_set('comment_default_per_page_'.$name, 50);
+  variable_set('comment_form_location_'.$name, 1);
+  variable_set('comment_'.$name, 1);
+  variable_set('comment_preview_'.$name,1);
+  
+  /**** STEP 3 - create and add instances of new fields ****/
+
+  // create all the fields we are adding to our content type
+  module_load_include('inc', 'user_dashboard', 'user_dashboard_content_type');
+  foreach (_user_dashboard_create_fields() as $field) {
+    field_create_field($field);
+  }
+
+  // create all the instances for our fields
+  foreach (_user_dashboard_create_instances() as $instance) {
+    $instance['entity_type'] = 'node';
+    $instance['bundle'] = $dashboard['type'];
+    field_create_instance($instance);
+  }
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function user_dashboard_uninstall() { 
+  // machine name of the content type
+  $name = 'dashboard';
+
+  // gather all dashboard nodes created
+  $sql = 'SELECT nid FROM {node} n WHERE n.type = :type';
+  $result = db_query($sql, array(':type' => $name));
+  $nids = array();
+  foreach ($result as $row) {
+    $nids[] = $row->nid;
+  }
+  
+  // delete all the dashboard nodes at once
+  node_delete_multiple($nids);
+
+  // remove persistant variables that control settings
+  variable_del('additional_settings__active_tab_' . $name);
+  variable_del('node_preview_' . $name);
+  variable_del('node_options_' . $name);
+  variable_del('node_submitted_' . $name);
+  variable_del('menu_options_' . $name);
+  variable_del('menu_parent_' . $name);
+  
+  //comment
+  variable_del('comment_anonymous_'.$name);
+  variable_del('comment_default_mode_'.$name);
+  variable_del('comment_default_per_page_'.$name);
+  variable_del('comment_form_location_'.$name);
+  variable_del('comment_'.$name);
+  variable_del('comment_preview_'.$name);
+  
+  // delete our content type
+  node_type_delete($name);
+
+  // find all fields and delete them
+  module_load_include('inc', 'user_dashboard', 'user_dashboard_content_type');
+  foreach (array_keys(_user_dashboard_create_fields()) as $field) {
+    field_delete_field($field);
+  }
+
+  // find all fields and delete instance
+  $instances = field_info_instances('node', $name);
+  foreach ($instances as $instance_name => $instance) {
+    field_delete_instance($instance);
+  }
+
+  // purge all field info
+  field_purge_batch(1000);
+}
+

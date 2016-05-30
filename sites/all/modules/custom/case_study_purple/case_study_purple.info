@@ -1,0 +1,14 @@
+name = Case Study Purple
+description = Provides a Case Study Management.
+core = 7.x
+version = 7.x-1.0
+package = Purple
+
+dependencies[] = image
+dependencies[] = link
+dependencies[] = list
+dependencies[] = text
+dependencies[] = options
+dependencies[] = ctools
+dependencies[] = views
+dependencies[] = media

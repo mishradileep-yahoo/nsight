@@ -1,0 +1,69 @@
+<?php
+/**
+ * @file
+ * Code for the whoisvisiting module.
+ */
+
+/**
+ * Implements hook_permission().
+ */
+function whoisvisiting_permission() {
+  return array(
+    'administer WhoIsVisiting configuration' => array(
+      'title' => t('Administer WhoIsVisiting configuration'),
+    )
+  );
+}
+
+/**
+ * Implements hook_menu().
+ */
+function whoisvisiting_menu() {
+  $items['admin/config/system/whoisvisiting'] = array(
+    'title' => 'WhoIsVisiting',
+    'type' => MENU_NORMAL_ITEM,
+    'description' => 'Configure the settings used to integrate whoisvisiting analytics.',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('whoisvisiting_admin_settings'),
+    'access arguments' => array('administer WhoIsVisiting configuration'),
+  );
+  return $items;
+}
+
+/**
+ * Page callback: whoisvisiting admin settings form.
+ */
+function whoisvisiting_admin_settings() {
+  $form['whoisvisiting_account_number'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Account Number'),
+    '#default_value' => variable_get('whoisvisiting_account_number', ''),
+  );
+  return system_settings_form($form);
+}
+
+/**
+ * Implements hook_page_build().
+ */
+function whoisvisiting_page_build(&$page) {
+  // Get WhoIsVisiting account number.
+  $whoisvisiting_account_number = check_plain(variable_get('whoisvisiting_account_number', ''));
+
+  $settings = array(
+    'whoisvisiting' => array(
+      'account_number' => $whoisvisiting_account_number,
+    ),
+  );
+
+  $build['#attached']['js'][] = array('data' => $settings, 'type' => 'setting');
+
+  $build['#attached']['js'][] = array(
+    'data' => drupal_get_path('module', 'whoisvisiting') . '/js/whoisvisiting.js',
+    'type' => 'file',
+    'scope' => 'footer',
+    'options' => array(
+      'every_page' => TRUE,
+    ),
+  );
+  drupal_process_attached($build);
+}

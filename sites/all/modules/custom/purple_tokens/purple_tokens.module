@@ -1,0 +1,173 @@
+<?php
+
+/**
+ * @file
+ * This file is for the 'Tokens' module
+ */
+/**
+ * Implements hook_token_info().
+ */
+function purple_tokens_token_info() {
+  $types['get'] = array(
+    'name' => t("Get custom Tokens"),
+    'description' => t("Tokens for custom."),
+  );
+  
+  $custom_tokens['user_name'] = array(
+    'name' => t("User Name"),
+    'description' => t("The {user}.name of the user viewing the content."),
+  );
+  $custom_tokens['theme_path'] = array(
+    'name' => t("Theme Path"),
+    'description' => t("Default theme path."),
+  );
+  $custom_tokens['base_path'] = array(
+    'name' => t("Base Path"),
+    'description' => t("Default Base path."),
+  );
+  $custom_tokens['contact_form'] = array(
+    'name' => t("Contact Form"),
+    'description' => t("Dynamic Contact Form."),
+  );
+ $custom_tokens['contact_address1'] = array(
+    'name' => t("Contact address1"),
+    'description' => t("Dynamic Contact address1."),
+  );
+ $custom_tokens['contact_address2'] = array(
+    'name' => t("Contact address2"),
+    'description' => t("Dynamic Contact address2."),
+  );
+ $custom_tokens['contact_address3'] = array(
+    'name' => t("Contact address3"),
+    'description' => t("Dynamic Contact address3."),
+  );
+   $custom_tokens['oracle-open-world-2015-event'] = array(
+    'name' => t("Oracle Open world 2015"),
+    'description' => t("Oracle Open world 2015."),
+  );
+  return array(
+    'types' => $types,
+    'tokens' => array(
+      'custom_tokens' => $custom_tokens,
+    ),
+  );
+}
+/**
+ * Implements hook_tokens().
+ */
+function purple_tokens_tokens($type, $tokens, array $data = array(), array $options = array()) {
+  global $user, $base_url;
+  
+  $replacements = array();
+  
+  
+  if ($type == 'get') {
+    foreach ($tokens as $name => $original) {
+      switch ($name) {
+        case 'user_name':
+          $replacements[$original] = $user->name;
+        break;
+        case 'theme_path':
+          $replacements[$original] = $base_url.'/'.drupal_get_path('theme', variable_get('theme_default', NULL));
+        break;
+	      case 'base_path':
+          $replacements[$original] = $base_url;
+        break;
+	case 'contact_form':
+          $replacements[$original] = block_render('webform', 'client-block-1');
+        break;
+	case 'contact_form1':
+          $replacements[$original] = block_render('webform', 'client-block-540');
+        break;
+	case 'contact_address1':
+          $replacements[$original] = views_embed_view('contactus', 'block_3');
+        break;
+	case 'contact_address2':
+          $replacements[$original] = views_embed_view('contactus', 'block_4');
+        break;
+	case 'contact_address3':
+          $replacements[$original] = views_embed_view('contactus', 'block_5');
+        break;
+        case 'oracle-open-world-2015-event':
+          $replacements[$original] = block_render('webform', 'client-block-2');
+        break;
+
+
+      }
+    }
+  }
+  
+  return $replacements;
+}
+
+/**
+ * Implements hook_field_widget_form_alter().
+ */
+/*function purple_tokens_hook_field_widget_form_alter(&$element, &$form_state, $context) {
+  // Prevent replace tokens on field admin ui form.
+  if (!is_null($element['#entity'])) {
+    // Determine the $user. If entity has uid, try to load. If can't, use the
+    // global $user.
+    if (isset($element['#entity']->uid)) {
+      if (!$user = user_load($element['#entity']->uid)) {
+        global $user;
+      }
+    }
+
+    // Build data for token replacement.
+    $data = array(
+      $element['#entity_type'] => $element['#entity'],
+      'user' => $user,
+    );
+    // Eg. the body field, the default value is stored in
+    // $element['#default_value']
+    if (isset($element['#default_value']) && !is_array($element['#default_value'])) {
+      $element['#default_value'] = token_replace($element['#default_value'], $data);
+    }
+    // Eg. the link field, the default value is stored in
+    // $element['#default_value']['url']
+    else if (is_array($element['#default_value'])) {
+      foreach ($element['#default_value'] as $key => $value) {
+        if (is_string($value)) {
+          $element['#default_value'][$key] = token_replace($value, $data);
+        }
+      }
+    }
+    // Eg. the text field, the default value is stored in
+    // $element['value']['#default_value']
+    else if (isset($element['value'])) {
+      if (isset($element['value']['#default_value']) && !is_array($element['value']['#default_value'])) {
+        $element['value']['#default_value'] = token_replace($element['value']['#default_value'], $data);
+      }
+    }
+  }
+}*/
+
+/*
+ * Token module - used to provide token replacements when writing emails.
+ */
+/*function purple_tokens_token_values($type, $object = NULL) {
+  switch ($type) {
+    case 'node':
+      $allowed_tags = array('br', 'div');
+      $body                       = filter_xss($object->body, $allowed_tags);
+      $body                       = str_replace('&nbsp;', ' ', $body);
+      $values['body']             = $body;
+      $teaser                     = filter_xss($object->teaser, $allowed_tags);
+      $values['teaser']           = $teaser;
+    return $values;
+   }
+}
+*/
+
+/*
+ * Token module - used to provide descriptive help about each available token
+ * when writing emails.
+ */
+/*function purple_tokens_token_list($type = 'all') {
+  if ($type == 'node' || $type == 'all') {
+    $tokens['node']['body']           = t('Node body');
+    $tokens['node']['teaser']         = t('Node teaser');
+    return $tokens;
+  }
+}*/

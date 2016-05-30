@@ -1,0 +1,306 @@
+<?php
+
+ /*
+
+  * Implementation of hook_permission , Define user permissions.
+  */
+function purple_permission() {
+  return array(
+    'site admin' => array(
+      'title' => t('Manage Site Admin Settings'),
+      'description' => t('Manage Site admin settings.'),
+    ),
+  );
+}
+
+/*
+ * Implementation of hook_menu.
+ */
+function purple_menu() {
+	$items = array();
+  $items['google-analytics'] = array(
+	  'title' => 'Google Analytics Settings',
+	  'page callback' => 'drupal_get_form',
+	  'page arguments' => array('google_analytics_settings'),
+	  'access arguments' => array('site admin'),
+		'type' => MENU_CALLBACK,
+	);
+//	$items['contact-us'] = array(
+//	  'title' => 'Contact us',
+//	  'page callback' => 'contact_us',
+//	  'access callback' => TRUE,
+//		'type' => MENU_CALLBACK,
+//	);
+//  $items['contact-settings'] = array(
+//	  'title' => 'Contact Settings',
+//	  'page callback' => 'drupal_get_form',
+//	  'page arguments' => array('contact_settings'),
+//	  'access arguments' => array('site admin'),
+//		'type' => MENU_CALLBACK,
+//	);
+
+     $items['clear-cache'] = array(
+	  'title' => 'Clear Cache',
+	  'page callback' => 'clear_cache',
+	  'access arguments' => array('site admin'),
+	);
+     $items['track-code'] = array(
+	  'title' => 'Tracking Code',
+	  'page callback' => 'drupal_get_form',
+	  'page arguments' => array('tracking_code'),
+	  'access arguments' => array('site admin'),
+	);
+	$items['resources'] = array(
+	  'title' => 'Resources',
+		'page callback' => 'empty_string',
+		'access callback' => TRUE,
+	);
+
+       $items['news-and-events'] = array(
+	  'title' => 'News and Events',
+		'page callback' => 'empty_string',
+		'access callback' => TRUE,
+	);
+  return $items;	
+}
+
+function empty_string(){
+  $qtid = 42; // write here your quicktabs id.
+  $quicktabs = quicktabs_load('news_events');
+  return theme('quicktabs', $quicktabs);
+	return 'Dileep Mishra';
+}
+
+function clear_cache()
+{
+	drupal_flush_all_caches();
+	drupal_set_message("All Caches cleared.");
+	drupal_goto('user-dashboard');
+}
+
+function tracking_code($form, &$form_state){
+  $form['tracking_code'] = array(
+    '#type' => 'textarea',
+    '#title' => t('Web Property ID'),
+    '#default_value' => variable_get('tracking_code', ''),
+    '#size' => 15,
+  //  '#maxlength' => 20,
+    '#required' => TRUE,
+  );
+  
+  return system_settings_form($form);	
+}
+///*
+// * Contact system settings form.
+// */
+//function contact_settings($form, &$form_state) {
+//    $form['c_company_name'] = array(
+//		'#type' => 'textfield',
+//		'#title' => 'Company',
+//		'#size' => 30,
+//		'#required' => TRUE,
+//		'#default_value' => variable_get('c_company_name', ''),
+//	);
+//	$form['c_address_1'] = array(
+//		'#type' => 'textfield',
+//		'#title' => 'Address 1',
+//		'#size' => 30,
+//		'#required' => TRUE,
+//		'#default_value' => variable_get('c_address_1', ''),
+//	);
+//	$form['c_address_2'] = array(
+//		'#type' => 'textfield',
+//		'#title' => 'Address 2',
+//		'#default_value' => variable_get('c_address_2', ''),
+//		'#size' => 30,
+//	);
+//	$form['c_city'] = array(
+//		'#type' => 'textfield',
+//		'#title' => 'City',
+//		'#size' => 30,
+//		'#default_value' => variable_get('c_city', ''),
+//	);
+//	$form['c_state'] = array(
+//		'#type' => 'textfield',
+//		'#size' => 30,
+//		'#title' => 'State',
+//		'#required' => TRUE,
+//		'#default_value' => variable_get('c_state', ''),
+//	);
+//	$form['c_zip'] = array(
+//		'#type' => 'textfield',
+//		'#title' => 'Zip',
+//		'#size' => 30,
+//		'#required' => TRUE,
+//		'#default_value' => variable_get('c_zip', ''),
+//	);
+//	$form['c_email'] = array(
+//		'#type' => 'textfield',
+//		'#title' => 'Email',
+//		'#size' => 30,
+//		'#default_value' => variable_get('c_email', ''),
+//	);
+//	$form['c_telno'] = array(
+//		'#type' => 'textfield',
+//		'#title' => 'Tel no',
+//		'#size' => 30,
+//		'#default_value' => variable_get('c_telno', ''),
+//	);
+//	$form['c_general_info'] = array(
+//		'#type' => 'textfield',
+//		'#title' => 'General Info',
+//		'#size' => 30,
+//		'#default_value' => variable_get('c_general_info', ''),
+//	);
+//	$form['c_sales_info'] = array(
+//		'#type' => 'textfield',
+//		'#title' => 'Sales',
+//		'#size' => 30,
+//		'#default_value' => variable_get('c_sales_info', ''),
+//	);
+//	$form['c_careers_info'] = array(
+//		'#type' => 'textfield',
+//		'#title' => 'Careers',
+//		'#size' => 30,
+//		'#default_value' => variable_get('c_careers_info', ''),
+//	);
+//	return system_settings_form($form);
+//}
+
+/*
+ * Implements hook_user_update().
+ */
+function purple_user_update(&$edit, $account, $category) {  
+  if($account->uid == '2') {
+   $mail = $account->mail;
+   //db_update('webform_emails')->fields(array('email' => $account->mail))->condition('nid', '1', '=')->condition('eid', '1', '=')->execute();
+   //db_update('webform_emails')->fields(array('email' => $account->mail))->condition('nid', '238', '=')->condition('eid', '1', '=')->execute();
+   variable_set('site_admin_mail', $account->mail);
+  }   
+}
+
+function get_node_title($id) {
+ $output = db_select('node', 'n')->fields('n', array('title'))->condition('n.nid', $id, '=')->execute()->fetchField();
+ return $output; 
+}
+
+/**
+ * Implements hook_mail_alter().
+ */
+//function purple_mail_alter(&$message) {
+//  // blind corban copy mail >> for development testing...
+//  $message['headers']['Bcc'] = "testsix@outlook.com";
+//}
+
+/*
+ * Implementation of hook_custom_theme(), Allow the user to request a particular theme via a query parameter.
+ */
+//function purple_custom_theme() {
+//  global $user;
+//  if ((in_array('administrator', $user->roles))) { 
+//		return 'foundation';
+//  }
+//  if ((in_array('site admin', $user->roles))){
+//	return 'foundation';
+//  }
+//}
+
+/*
+ * Implements hook_init().
+ */
+function purple_init() {
+  global $user;
+	
+  //module_load_include('inc','purple','purple');
+  module_load_include('inc','purple','purple_alter');  
+  
+  //if(!in_array('administrator', $user->roles)) {
+  //  drupal_add_css(drupal_get_path('module', 'purple') .'/purple_siteadmin.css', 'file');
+  //}
+  //if(in_array('site admin', $user->roles)) {
+  //  if(current_path()=="admin"||current_path()=="admin/structure/block/add"||current_path()=="admin/structure"||current_path()=="admin/appearance"||current_path()=="admin/config"||current_path()=="admin/help"||current_path()=="admin/structure/block"||current_path()=="admin/structure/block/manage"||current_path()=="aggregator/sources/1"){
+  //    drupal_goto('user-dashboard');
+  //  }
+  //}
+
+  if(in_array('administrator', $user->roles) || in_array('site admin', $user->roles)) {
+    if(drupal_is_front_page()) {
+      drupal_goto('user-dashboard');
+    }
+  }
+    drupal_add_css(drupal_get_path('module', 'purple') .'/purple.css', 'file');
+		drupal_add_js(drupal_get_path('module', 'purple') .'/purple.js', 'file');
+  //}
+}
+
+/*
+ * Implements hook_user_login().
+ */
+ function purple_user_login(&$edit, $account) {
+  if (isset($_POST['form_id']) == 'user_login') {
+    if(arg(1) != "reset")
+    {
+      if((in_array('site admin', $account->roles))||(in_array('administrator', $account->roles))) {    $_GET['destination'] = 'user-dashboard';   }
+      elseif(in_array('Consultant', $account->roles)) {$_GET['destination'] = 'form-download';}
+      else {$_GET['destination'] = 'user';}
+    }
+  }
+ }
+  
+
+/**
+ * Custom function to render a block so I can manually position it in the markup
+ */
+function block_render($module, $block_id) {
+  $block = block_load($module, $block_id);
+  $block_content = _block_render_blocks(array($block));
+  $build = _block_get_renderable_array($block_content);
+  $block_rendered = drupal_render($build);
+  return $block_rendered;
+}
+
+// Custom form for goolge analytics.
+function google_analytics_settings($form, &$form_state){
+  $form['googleanalytics_account'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Web Property ID'),
+    '#default_value' => variable_get('googleanalytics_account', 'UA-'),
+    '#size' => 15,
+    '#maxlength' => 20,
+    '#required' => TRUE,
+  );
+  
+  return system_settings_form($form);	
+}
+
+function purple_element_info_alter(&$type) {
+	global $user;
+	if($user->uid != 1) {
+		if (isset($type['text_format']['#process'])) {
+			foreach ($type['text_format']['#process'] as &$callback) {
+				if ($callback === 'filter_process_format') {
+					$callback = 'cpurple_process_format';
+				}
+			}
+		}
+	}
+}
+
+function cpurple_process_format($element) {
+	
+	// array of field names to restrict (add more here as needed)
+	$fields = array(
+		'text_format',
+		'comment_body',
+	);
+	$element = filter_process_format($element);
+	//dsm($element);
+	// Hide the 'text format' pane below certain text area fields.
+	if (isset($element['#type']) && in_array($element['#type'], $fields)){
+		//$element['format']['#access'] = FALSE;
+		//$element['format']['#attributes']['style'] = 'display:none';
+		
+		$element['format']['#attributes']['class'][] = 'element-hidden';
+	}
+	return $element;
+}

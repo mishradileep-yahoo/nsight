@@ -1,0 +1,13 @@
+name = User Dashboard Purple
+description = Provides a User permissions related dashboard.
+core = 7.x
+version = 7.x-1.0
+package = Purple
+
+dependencies[] = image
+dependencies[] = link
+dependencies[] = list
+dependencies[] = text
+dependencies[] = options
+dependencies[] = ctools
+dependencies[] = views

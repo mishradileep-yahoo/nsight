@@ -1,0 +1,4 @@
+.page-user-dashboard #page-title, .page-user-dashboard .page-header, .page-content-manage h1#page-title, .page-content-manage h1.page-header { display: none; }
+.page-content-manage .dashboard-title { display: block !important; }
+.view.user-dashboard ul li { margin:0 0 0.25em 1.5em; width: 168px; float: left; height: 108px; list-style: none; border: 1px dotted gray; padding: 5px; margin-bottom: 15px; text-align: center; border-radius: 5px;}
+.view.user-dashboard ul li:hover {border: 1px solid #4D4D4D; box-shadow: 2px 2px 5px #888888;}

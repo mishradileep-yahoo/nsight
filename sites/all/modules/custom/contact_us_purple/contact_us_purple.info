@@ -1,0 +1,16 @@
+name = Contact us Purple
+description = Provides a Contact us Management.
+core = 7.x
+version = 7.x-1.0
+package = Purple
+
+dependencies[] = image
+dependencies[] = link
+dependencies[] = list
+dependencies[] = text
+dependencies[] = options
+dependencies[] = ctools
+dependencies[] = views
+dependencies[] = media
+dependencies[] = views_php
+dependencies[] = email

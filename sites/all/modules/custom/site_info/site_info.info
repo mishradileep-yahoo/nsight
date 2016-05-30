@@ -1,0 +1,5 @@
+name = Site Information
+description = Provides a Logo Management.
+core = 7.x
+version = 7.x-1.0
+package = Purple Customize

@@ -1,0 +1,176 @@
+$brand-primary:      #565c5e; 
+$brand-secondary:    #009dda;
+$btn-default-bg:     $brand-secondary;
+$btn-default-color:  #fff;
+$btn-default-border: $btn-default-bg;
+$border-radius-base: 20px;
+
+@font-face {	
+	font-family: 'Roboto-Thin';
+    src: url('../fonts/Roboto-Thin.ttf');
+    src: url('../fonts/Roboto-Thin.ttf') format('truetype');
+}
+@font-face {	
+	font-family: 'Roboto-Light';
+    src: url('../fonts/Roboto-Light.ttf');
+    src: url('../fonts/Roboto-Light.ttf') format('truetype');
+}
+@font-face {	
+	font-family: 'Roboto-Regular';
+    src: url('../fonts/Roboto-Regular.ttf');
+    src: url('../fonts/Roboto-Regular.ttf') format('truetype');
+}
+@font-face {	
+	font-family: 'Roboto-Medium';
+    src: url('../fonts/Roboto-Medium.ttf');
+    src: url('../fonts/Roboto-Medium.ttf') format('truetype');
+}
+@font-face {	
+	font-family: 'Roboto-Bold';
+    src: url('../fonts/Roboto-Bold.ttf');
+    src: url('../fonts/Roboto-Bold.ttf') format('truetype');
+}
+@font-face {	
+	font-family: 'Gotham-Medium';
+    src: url('../fonts/Gotham-Medium.otf');
+    src: url('../fonts/Gotham-Medium.otf') format('truetype');
+}
+
+/* Import Bootstrap */
+@import "bootstrap";
+
+
+@mixin color-gradient($bg1, $bg2) {
+	background: $bg1; /* Old browsers */
+	background: -moz-linear-gradient(top,  $bg1 0%, $bg2 100%); /* FF3.6+ */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,$bg1), color-stop(100%,$bg2)); /* Chrome,Safari4+ */
+	background: -webkit-linear-gradient(top,  $bg1 0%,$bg2 100%); /* Chrome10+,Safari5.1+ */
+	background: -o-linear-gradient(top,  $bg1 0%,$bg2 100%); /* Opera 11.10+ */
+	background: -ms-linear-gradient(top,  $bg1 0%,$bg2 100%); /* IE10+ */
+	background: linear-gradient(to bottom,  $bg1 0%,$bg2 100%); /* W3C */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='$bg1', endColorstr='$bg2',GradientType=0 ); /* IE6-9 */
+}
+
+@mixin border-radius($radius) {
+  -webkit-border-radius: $radius;
+     -moz-border-radius: $radius;
+      -ms-border-radius: $radius;
+          border-radius: $radius;
+}
+
+
+
+body                   { color:$brand-primary; font-family:'Roboto-Regular'; font-size:13px; }
+h1                     { text-align:center; font-family:'Roboto-Thin'; font-size:54px; padding-top:95px; padding-bottom:75px; }
+h3                     { font-family:'Roboto-Regular'; font-size:30px; color: $brand-primary; margin-top:80px; }
+h4                     { font-family:'Roboto-Regular'; font-size:13px; color: $brand-primary; padding:20px 0; line-height:20px;  }
+hr                     { border-color:#ebebeb; margin:40px 0; }
+p                      { line-height:25px; }
+ul li                  { list-style:none; margin:20px 0; }
+
+.banner                { background:url('../imgs/banner-home.jpg') no-repeat fixed center/cover; height:900px; widows:100%; color:#fff; }
+.banner-about-us       { @include color-gradient(#d00b40,#b10444); min-height:350px; padding:20px; position: relative; top:100px;  }
+.banner-analytics      { @include color-gradient(#dca67c,#db9772); min-height:350px; padding:20px; position: relative; top:100px;  }
+.banner-ce             { @include color-gradient(#83b3b8,#8cbfb5); min-height:350px; padding:20px; position: relative; top:100px;  }
+.banner-erp            { @include color-gradient(#90bf9b,#92bf8c); min-height:350px; padding:20px; position: relative; top:100px;  }
+.banner-mobility       { @include color-gradient(#7075b9,#749fbd); min-height:350px; padding:20px; position: relative; top:100px;  }
+.banner-inside-text    { font-family:'Roboto-Light'; font-size:24px; color:#fff; padding-top:4%;width: 40%; margin:0 auto; text-align:center; }
+.bg-red                { background:url('../imgs/bg-red.png') no-repeat center/cover; color:#fff; font-family:'Roboto-Thin'; font-size:36px; height:480px; padding:30px; text-align:center; display:table; }
+.bg-red .caption       { display:table-cell; vertical-align:middle; line-height:40px; text-align:left }                
+.bg-vid                { background:url('../imgs/vid-bg-home.png') no-repeat center/cover; display: table; height:480px; text-align:center; }
+.bg-vid a              { display:table-cell; vertical-align:middle; }
+.border-icon           { @include border-radius(20px); border:1px solid $brand-secondary; color: $brand-secondary; padding:7px; margin-right:20px; }
+.btn-play              { opacity:.5; }
+.btn-play:hover        { opacity:1; }
+.case-studies          { padding:100px 0; }
+.case-studies h1       { display:inline; }
+.case-studies p        { font-family:'Roboto-Bold'; font-size:16px; line-height:normal; }
+.click-below           { @extend .container; }
+.click-to-learnmore    { @extend .text-center; padding:20px 0; }
+.client-box            { width:100% }
+.client-box .item      { background:#f6f9fa; text-align:center; display:table; border:1px solid #e4e7e8; float:left; width:20%; height:172px;  }
+.client-box .item .in  { display:table-cell; vertical-align:middle; }
+.client-header         { font-size:54px; font-family:'Roboto-Thin'; padding:20px 0; background:#009dda; color:#fff; text-align:center }
+.container-fluid       { padding:0; }
+.dropdown              { margin-top:5px; }
+.dropdown-menu         { padding-top:0; padding-bottom:0; }
+.dropdown-menu > li    { margin:0; }
+.dropdown-menu > li > a{ font-size:14px; font-family:'Gotham-Medium';color:#545454; padding:20px; text-transform:uppercase; width: 250px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.dropdown-menu > li > a:hover, .dropdown-menu > li > a:focus { background:#eef4f8; }
+.dropdown-menu .divider{ margin:0; }
+
+.dropdown-submenu      { position:relative; }
+.dropdown-submenu>.dropdown-menu { top:0;left:100%;margin-top:-6px;margin-left:-1px;-webkit-border-radius:6px;-moz-border-radius:6px;border-radius:6px; width:100%; overflow:hidden }
+.dropdown-submenu>.dropdown-menu a { text-transform:none; }
+.dropdown-submenu:hover>.dropdown-menu { display:block; }
+.dropdown-submenu>a:after { display:block; content:" "; float:right; width:0; height:0; border-color:transparent; border-style:solid; border-width:5px 0 5px 5px; border-left-color:#acacac; margin-top:5px; margin-right:-10px; }
+.dropdown-submenu.pull-left { float:none; }
+.dropdown-submenu.pull-left>.dropdown-menu { left:-100%;margin-left:10px;-webkit-border-radius:6px;-moz-border-radius:6px;border-radius:6px; }
+
+.fiori-easy-ui         { padding:60px 0; }
+.footer                { background-color:#303c41; padding-top:7px }
+.gray                  { background-color:#f6fafb; }
+.inside-banner         { height:900px; widows:100%; color:#fff; }
+.inside-about-us       { background:url('../imgs/inside-banner/about-us.jpg') no-repeat center 350px/cover;  }
+.inside-analytics      { background:url('../imgs/inside-banner/analytics.jpg') no-repeat center 350px/cover;  }
+.inside-ce             { background:url('../imgs/inside-banner/customer-engagement.jpg') no-repeat center 350px/cover;  }
+.inside-erp            { background:url('../imgs/inside-banner/erp.jpg') no-repeat center 350px/cover;  }
+.inside-mobility       { background:url('../imgs/inside-banner/mobility.jpg') no-repeat center 350px/cover;  }
+.inside-columns        { color:#899194; font-family:'Roboto-Regular'; font-size:17px; text-align:left; margin:30px 0; min-height:520px; }
+.inside-columns button { position:absolute; bottom:0; }
+.inside-columns h1     { color:$brand-secondary; font-family:'Roboto-Light'; font-size:32px; padding:0 0 40px 0; text-align:left; }
+.inside-columns ul     { padding-top:20px; }
+.inside-columns li     { list-style-image:url('../imgs/bullet-image.png'); list-style-position:20px; padding:3px; }
+.inside-columns li p   { position:relative; top:-13px; }
+.inside-columns .bpi-title { color:#425c63; font-family:'Roboto-Medium'; font-size:18px; padding:0 0 25px 0; text-align:left; margin:0; position:relative; top:-13px; }
+.inside-columns .header-small { font-size:22px; padding-bottom:0; font-family:'Roboto-Regular'; }
+.know-more-icons       { text-align:center; font-family:'Roboto-Bold'; }
+.know-more-icons h2    { font-size:18px; }
+.laptop-hightlight     { background:url('../imgs/sap-fiori/ico-bigbullet.png') no-repeat 0 30px; position:absolute; text-align:left; padding-left:110px; width:360px; }
+.laptop-hightlight h1  { font-family:"Roboto-Light"; font-size:42px; color:#425c63; text-align:left; padding:0; }
+.laptop-hightlight p   { font-family:"Roboto-Regular"; font-size:13px; color:$brand-primary; }
+.sapfiori-laptop-ui    { @extend .text-center; background:url('../imgs/sap-fiori/laptop-ui.png') no-repeat center top; padding:60px 0; min-height:800px; }
+.more-description      { padding:0 0 70px 0; }
+.more-description h2   { font-family:'Roboto-Bold'; font-size:18px; margin-top:0 }
+.more-description p    { font-family:'Roboto-Regular'; font-size:13px; color:#9ea4a7; }
+
+.navbar                { @extend .trans; background-color:#fff; color:#545454; font-family:'Gotham-Medium'; height:100px; padding-top:16px; text-transform:uppercase; }
+.navbar .header-logo   { @extend .trans; height:43px; }
+.navbar .navbar-header a { @extend .trans; }
+.navbar .navbar-header { padding-left:20px; }
+.navbar-nav            { @extend .trans; margin-top:10px; margin-right:10px; }
+.navbar-nav > li > .dropdown-menu { border-radius:6px; }
+
+.navbar.smaller 			 { height: 60px; padding-top:5px; }
+.navbar.smaller .navbar-header a { padding-top:10px; }
+.navbar.smaller .header-logo { height:30px; }
+.navbar.smaller .navbar-nav  { margin-top:0; }
+
+.nsight-advantage      { background:url('../imgs/banner-logo.png') no-repeat center center/contain; display:none; height: 335px; position: absolute; top: 335px; text-align:center; width: 100%; margin:0 auto; }
+.nsight-advantage h1   { font-size:70px; padding:80px 20% 0 20%; }
+.nsight-advantage h2   { font-size:24px; width:40%; margin:0 auto}
+.our-story-intro       { background:url('../imgs/ico-story.png') no-repeat 25px center; font-family:'Roboto-Bold'; font-size:18px; min-height:95px; line-height: 30px; margin:20px 0; padding-left:160px; }
+.our-story-text        { padding:40px 0; line-height:25px; }
+.section-spacing       { padding-bottom:60px; }
+.sm-icons              { width:60px; display:inline-block; }
+.sub-banner            { height:350px; widows:100%; margin-top:102px; }
+.sub-banner-analytics  { background:url('../imgs/inside-sub/sap_analytics.jpg') no-repeat center/cover; }
+.sub-banner-e-biz      { background:url('../imgs/inside-sub/oracle_e-business.jpg') no-repeat center/cover; }
+.sub-banner-mobilelifecycle{ background:url('../imgs/inside-sub/mobile-lifecycle.jpg') no-repeat center/cover; }
+.sub-banner-salescloud{ background:url('../imgs/inside-sub/sales-cloud.png') no-repeat center/cover; }
+.sub-banner-sapcustomer{ background:url('../imgs/inside-sub/sap_for_customer.jpg') no-repeat center/cover; }
+.sub-banner-sapcrm     { background:url('../imgs/inside-sub/sap-crm.jpg') no-repeat center/cover; }
+.sub-banner-sapfiori   { background:url('../imgs/inside-sub/sap-fiori.jpg') no-repeat center/cover; }
+.sub-banner-sapomni    { background:url('../imgs/inside-sub/sap-omni.jpg') no-repeat center/cover; }
+.trans                 { -webkit-transition: all 0.3s; -moz-transition: all 0.3s; -ms-transition: all 0.3s; -o-transition: all 0.3s; transition: all 0.3s; }
+.text-green            { color:#6fa628; }
+
+@media (max-width: 992px) {
+
+	.client-box .item             { width:50%;}
+	
+}
+
+@media (min-width: 979px) {
+	ul.nav li.dropdown:hover > ul.dropdown-menu {	display: block;	margin-top:0px;	}
+}

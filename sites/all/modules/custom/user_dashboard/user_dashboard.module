@@ -1,0 +1,489 @@
+<?php
+
+/**
+ * Implements hook_init().
+ */
+function user_dashboard_init() {
+	//if(arg(0) == "user-dashboard") {
+    drupal_add_css(drupal_get_path('module','user_dashboard').'/user_dashboard.css');
+	//}
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function user_dashboard_form_alter(&$form, &$form_state, $form_id) {
+  global $user;
+
+	if($form_id == 'views_exposed_form') {
+		$form['#info']['filter-title']['label'] = '';
+		$form['title']['#attributes'] = array('placeholder' => 'Title', 'class' => array('pull-left'));
+	}
+	
+  //if(!in_array('administrator', $user->roles)) {
+  //  if(($form_id == 'user_profile_form') || ($form_id == 'user_register_form')) {
+  //    /* Enable only Editor roles, unset rest of roles */
+  //    $roles = $form['account']['roles']['#options'];
+  //    $editor_rid = array_search('editor', $roles);
+  //    if(isset($editor_rid)) {
+  //      $options = $form['account']['roles']['#options'];
+  //      $options_keys = array_keys($form['account']['roles']['#options']);
+  //      $default = $form['account']['roles']['#default_value'];
+  //      
+  //      $editroles = array_intersect($default, $options_keys);
+  //      array_push($editroles, $editor_rid);
+  //      foreach($editroles as $key=>$value) {
+  //        $opt[$value] = $options[$value];
+  //      }
+  //      $form['account']['roles']['#options'] =  $opt;
+  //    }
+  //    //unset($form['account']['name']);
+  //  }
+  // 
+  //}
+
+	if(isset($form['#field']['field_name']) && ($form['#field']['field_name'] == 'field_user_permissions')) {
+		if ($form_id == 'field_ui_field_edit_form') {
+			if ($form['#field']['module'] == 'list') {
+				_purple_predefined_add_options($form['field']['settings']);
+			}
+		}
+		elseif ($form_id == 'field_ui_field_settings_form') {
+			if ($form['field']['module']['#value'] == 'list') {
+				_purple_predefined_add_options($form['field']['settings']);
+			}
+		}
+	}
+	
+}
+
+//##########################- Content type Permissions field -##############################################//
+
+function _purple_predefined_add_options(&$field_settings) {
+  $field_settings['allowed_values_function'] = array(
+    '#type' => 'select',
+    '#title' => t('Allowed values'),
+    '#options' => purple_predefined_get_callback_options() + array('' => t('Custom')),
+    '#default_value' => $field_settings['allowed_values_function']['#value'],
+    '#weight' => -10,
+  );
+  $field_settings['allowed_values']['#states']['visible'][':input[name="field[settings][allowed_values_function]"]'] = array('value' => '');
+  $field_settings['allowed_values']['#access'] = TRUE;
+  $field_settings['allowed_values_function_display']['#access'] = FALSE;
+}
+
+/**
+ * Get all the predefined options via hook_list_option_info().
+ *
+ * @see hook_list_option_info()
+ * @see hook_list_option_info_alter()
+ */
+function purple_predefined_get_list_option_info() {
+  $info = &drupal_static(__FUNCTION__);
+
+  if (!isset($options)) {
+    $cid = "list:predefined-option:info:" . $GLOBALS['language']->language;
+    if ($cache = cache_get($cid)) {
+      $info = $cache->data;
+    }
+    else {
+      $info = module_invoke_all('list_option_info');
+      drupal_alter('list_option_info', $info);
+      cache_set($cid, $info);
+    }
+  }
+
+  return $info;
+}
+
+/**
+ * Get an array of predefined options prepared for #options.
+ *
+ * The array will be formatted with the option callback as the keys, and the
+ * label as the values.
+ */
+function purple_predefined_get_callback_options() {
+  $info = purple_predefined_get_list_option_info();
+  $options = array();
+  foreach ($info as $option) {
+    $options[$option['callback']] = $option['label'];
+  }
+  return $options;
+}
+
+/**
+ * Implements hook_list_option_info().
+ */
+function user_dashboard_list_option_info() {
+  $info['user_permissions'] = array(
+    'label' => t('User Permissions'),
+    'callback' => 'purple_predefined_list_option_permissions',
+  );
+  return $info;
+}
+
+function purple_predefined_list_option_permissions() { // user_access("create page content", user_load(2));
+  $types = node_type_get_types();
+  foreach($types as $key=>$value) {
+    foreach(node_list_permissions($key) as $k=>$v){
+      $perm[$k] = strip_tags($v['title']); //$k;
+    }
+  }
+  return array('site admin' => 'Manage Site Admin Settings') + $perm;
+}
+
+
+//#####################################- VIEWS -##############################################//
+
+/**
+ * Implements hook_theme().
+ */
+function user_dashboard_theme() {
+  return array(
+    'views_view_fields__user_dashboard__page_1' => array(  //base hook_displayname
+      'variables' => array('view' => NULL, 'options' => NULL, 'row' => NULL),
+      'template' => 'views-view-fields--user-dashboard--page-1', //provide the name of the template file ,
+      'base hook' => 'views_view_fields',  // provide the name of the base hook,
+      'path' => drupal_get_path('module', 'user_dashboard'),
+    ),
+		
+		'views_view_list__user_dashboard__page_1' => array(  //base hook_displayname
+      'variables' => array('view' => NULL, 'options' => NULL, 'row' => NULL),
+      'template' => 'views-view-list--user-dashboard--page-1', //provide the name of the template file ,
+      'base hook' => 'views_view_list',  // provide the name of the base hook,
+      'path' => drupal_get_path('module', 'user_dashboard'),
+    ),
+  );
+}
+
+/**
+ * Implements hook_views_api().
+ */
+function user_dashboard_views_api() {
+  list($module, $api) = func_get_args();
+  if ($module == "views" && $api == "views_default") {
+    return array("version" => "3.0");
+  }
+}
+
+/** 
+ * Implementation of hook_views_default_views().
+ */
+function user_dashboard_views_default_views() {
+
+  $export = array();
+	
+	$view = new view();
+	$view->name = 'user_dashboard';
+	$view->description = '';
+	$view->tag = 'default';
+	$view->base_table = 'node';
+	$view->human_name = 'User Dashboard';
+	$view->core = 7;
+	$view->api_version = '3.0';
+	$view->disabled = FALSE; /* Edit this to true to make a default view disabled initially */
+	
+	/* Display: Master */
+	$handler = $view->new_display('default', 'Master', 'default');
+	$handler->display->display_options['title'] = 'User Dashboard';
+	$handler->display->display_options['use_more_always'] = FALSE;
+	$handler->display->display_options['access']['type'] = 'perm';
+	$handler->display->display_options['cache']['type'] = 'none';
+	$handler->display->display_options['query']['type'] = 'views_query';
+	$handler->display->display_options['exposed_form']['type'] = 'basic';
+	$handler->display->display_options['pager']['type'] = 'none';
+	$handler->display->display_options['pager']['options']['offset'] = '0';
+	$handler->display->display_options['style_plugin'] = 'list';
+	$handler->display->display_options['style_options']['default_row_class'] = FALSE;
+	$handler->display->display_options['style_options']['row_class_special'] = FALSE;
+	$handler->display->display_options['row_plugin'] = 'fields';
+	$handler->display->display_options['row_options']['hide_empty'] = TRUE;
+	$handler->display->display_options['row_options']['default_field_elements'] = FALSE;
+	/* Field: Content: Title */
+	$handler->display->display_options['fields']['title']['id'] = 'title';
+	$handler->display->display_options['fields']['title']['table'] = 'node';
+	$handler->display->display_options['fields']['title']['field'] = 'title';
+	$handler->display->display_options['fields']['title']['label'] = '';
+	$handler->display->display_options['fields']['title']['alter']['word_boundary'] = FALSE;
+	$handler->display->display_options['fields']['title']['alter']['ellipsis'] = FALSE;
+	$handler->display->display_options['fields']['title']['element_label_colon'] = FALSE;
+	$handler->display->display_options['fields']['title']['element_default_classes'] = FALSE;
+	$handler->display->display_options['fields']['title']['link_to_node'] = FALSE;
+	/* Field: Content: Image */
+	$handler->display->display_options['fields']['field_dashboard_image']['id'] = 'field_dashboard_image';
+	$handler->display->display_options['fields']['field_dashboard_image']['table'] = 'field_data_field_dashboard_image';
+	$handler->display->display_options['fields']['field_dashboard_image']['field'] = 'field_dashboard_image';
+	$handler->display->display_options['fields']['field_dashboard_image']['label'] = '';
+	$handler->display->display_options['fields']['field_dashboard_image']['element_label_colon'] = FALSE;
+	$handler->display->display_options['fields']['field_dashboard_image']['element_default_classes'] = FALSE;
+	$handler->display->display_options['fields']['field_dashboard_image']['click_sort_column'] = 'fid';
+	$handler->display->display_options['fields']['field_dashboard_image']['settings'] = array(
+		'image_style' => 'user_dashboard',
+		'image_link' => '',
+	);
+	/* Field: Content: Link */
+	$handler->display->display_options['fields']['field_dashboard_link']['id'] = 'field_dashboard_link';
+	$handler->display->display_options['fields']['field_dashboard_link']['table'] = 'field_data_field_dashboard_link';
+	$handler->display->display_options['fields']['field_dashboard_link']['field'] = 'field_dashboard_link';
+	$handler->display->display_options['fields']['field_dashboard_link']['label'] = '';
+	$handler->display->display_options['fields']['field_dashboard_link']['element_label_colon'] = FALSE;
+	$handler->display->display_options['fields']['field_dashboard_link']['element_default_classes'] = FALSE;
+	/* Field: Content: User Permissions */
+	$handler->display->display_options['fields']['field_user_permissions']['id'] = 'field_user_permissions';
+	$handler->display->display_options['fields']['field_user_permissions']['table'] = 'field_data_field_user_permissions';
+	$handler->display->display_options['fields']['field_user_permissions']['field'] = 'field_user_permissions';
+	$handler->display->display_options['fields']['field_user_permissions']['label'] = '';
+	$handler->display->display_options['fields']['field_user_permissions']['element_label_colon'] = FALSE;
+	$handler->display->display_options['fields']['field_user_permissions']['element_default_classes'] = FALSE;
+	$handler->display->display_options['fields']['field_user_permissions']['type'] = 'list_key';
+	$handler->display->display_options['fields']['field_user_permissions']['delta_offset'] = '0';
+	/* Sort criterion: Content: Updated date */
+	$handler->display->display_options['sorts']['changed']['id'] = 'changed';
+	$handler->display->display_options['sorts']['changed']['table'] = 'node';
+	$handler->display->display_options['sorts']['changed']['field'] = 'changed';
+	$handler->display->display_options['sorts']['changed']['order'] = 'DESC';
+	/* Filter criterion: Content: Published */
+	$handler->display->display_options['filters']['status']['id'] = 'status';
+	$handler->display->display_options['filters']['status']['table'] = 'node';
+	$handler->display->display_options['filters']['status']['field'] = 'status';
+	$handler->display->display_options['filters']['status']['value'] = 1;
+	$handler->display->display_options['filters']['status']['group'] = 1;
+	$handler->display->display_options['filters']['status']['expose']['operator'] = FALSE;
+	/* Filter criterion: Content: Type */
+	$handler->display->display_options['filters']['type']['id'] = 'type';
+	$handler->display->display_options['filters']['type']['table'] = 'node';
+	$handler->display->display_options['filters']['type']['field'] = 'type';
+	$handler->display->display_options['filters']['type']['value'] = array(
+		'dashboard' => 'dashboard',
+	);
+	
+	/* Display: Content Management */
+	$handler = $view->new_display('page', 'Content Management', 'page');
+	$handler->display->display_options['defaults']['css_class'] = FALSE;
+	$handler->display->display_options['css_class'] = 'content-manage';
+	$handler->display->display_options['defaults']['use_ajax'] = FALSE;
+	$handler->display->display_options['use_ajax'] = TRUE;
+	$handler->display->display_options['defaults']['access'] = FALSE;
+	$handler->display->display_options['access']['type'] = 'perm';
+	$handler->display->display_options['access']['perm'] = 'site admin';
+	$handler->display->display_options['defaults']['exposed_form'] = FALSE;
+	$handler->display->display_options['exposed_form']['type'] = 'basic';
+	$handler->display->display_options['exposed_form']['options']['submit_button'] = 'Search';
+	$handler->display->display_options['defaults']['pager'] = FALSE;
+	$handler->display->display_options['pager']['type'] = 'some';
+	$handler->display->display_options['pager']['options']['items_per_page'] = '25';
+	$handler->display->display_options['pager']['options']['offset'] = '0';
+	$handler->display->display_options['defaults']['style_plugin'] = FALSE;
+	$handler->display->display_options['style_plugin'] = 'table';
+	$handler->display->display_options['style_options']['default_row_class'] = FALSE;
+	$handler->display->display_options['style_options']['row_class_special'] = FALSE;
+	$handler->display->display_options['style_options']['columns'] = array(
+		'title' => 'title',
+		'created' => 'created',
+		'status' => 'status',
+		'edit_node' => 'edit_node',
+		'delete_node' => 'delete_node',
+	);
+	$handler->display->display_options['style_options']['default'] = '-1';
+	$handler->display->display_options['style_options']['info'] = array(
+		'title' => array(
+			'sortable' => 1,
+			'default_sort_order' => 'asc',
+			'align' => '',
+			'separator' => '',
+			'empty_column' => 0,
+		),
+		'created' => array(
+			'sortable' => 1,
+			'default_sort_order' => 'asc',
+			'align' => '',
+			'separator' => '',
+			'empty_column' => 0,
+		),
+		'status' => array(
+			'sortable' => 1,
+			'default_sort_order' => 'asc',
+			'align' => 'views-align-center',
+			'separator' => '',
+			'empty_column' => 0,
+		),
+		'edit_node' => array(
+			'align' => 'views-align-center',
+			'separator' => '',
+			'empty_column' => 1,
+		),
+		'delete_node' => array(
+			'align' => 'views-align-center',
+			'separator' => '',
+			'empty_column' => 1,
+		),
+	);
+	$handler->display->display_options['defaults']['style_options'] = FALSE;
+	$handler->display->display_options['defaults']['row_plugin'] = FALSE;
+	$handler->display->display_options['defaults']['row_options'] = FALSE;
+	$handler->display->display_options['defaults']['header'] = FALSE;
+	/* Header: Global: PHP */
+	$handler->display->display_options['header']['php']['id'] = 'php';
+	$handler->display->display_options['header']['php']['table'] = 'views';
+	$handler->display->display_options['header']['php']['field'] = 'php';
+	$handler->display->display_options['header']['php']['empty'] = TRUE;
+	$handler->display->display_options['header']['php']['php_output'] = '<h2 class="dashboard-title"><?php print ucwords(str_replace(\'-\',\' \',arg(2))); ?></h2>
+		<?php $content_type = arg(1); $link_path = "node/add/". str_replace(\'_\',\'-\',$content_type); $add_label = "Add " .ucwords(str_replace(\'_\',\'-\',$content_type));
+		$cur_path = current_path();
+		$full_link_path = url($link_path, array(\'query\' => array(\'destination\'=>drupal_get_path_alias($cur_path)),\'absolute\'=>\'true\'));
+		?>
+		<ul class="action-links">
+		<li><?php print l($add_label,$full_link_path)?></li>
+		<li><?php print l(\'Back to Dashboard\',\'user-dashboard\')?></li>
+		</ul>';
+	$handler->display->display_options['defaults']['empty'] = FALSE;
+	/* No results behavior: Global: Text area */
+	$handler->display->display_options['empty']['area']['id'] = 'area';
+	$handler->display->display_options['empty']['area']['table'] = 'views';
+	$handler->display->display_options['empty']['area']['field'] = 'area';
+	$handler->display->display_options['empty']['area']['empty'] = TRUE;
+	$handler->display->display_options['empty']['area']['content'] = 'No records found.';
+	$handler->display->display_options['empty']['area']['format'] = 'filtered_html';
+	$handler->display->display_options['defaults']['fields'] = FALSE;
+	/* Field: Content: Title */
+	$handler->display->display_options['fields']['title']['id'] = 'title';
+	$handler->display->display_options['fields']['title']['table'] = 'node';
+	$handler->display->display_options['fields']['title']['field'] = 'title';
+	$handler->display->display_options['fields']['title']['alter']['word_boundary'] = FALSE;
+	$handler->display->display_options['fields']['title']['alter']['ellipsis'] = FALSE;
+	$handler->display->display_options['fields']['title']['element_label_colon'] = FALSE;
+	$handler->display->display_options['fields']['title']['element_default_classes'] = FALSE;
+	/* Field: Content: Post date */
+	$handler->display->display_options['fields']['created']['id'] = 'created';
+	$handler->display->display_options['fields']['created']['table'] = 'node';
+	$handler->display->display_options['fields']['created']['field'] = 'created';
+	$handler->display->display_options['fields']['created']['date_format'] = 'medium';
+	/* Field: Content: Published */
+	$handler->display->display_options['fields']['status']['id'] = 'status';
+	$handler->display->display_options['fields']['status']['table'] = 'node';
+	$handler->display->display_options['fields']['status']['field'] = 'status';
+	$handler->display->display_options['fields']['status']['type'] = 'unicode-yes-no';
+	$handler->display->display_options['fields']['status']['not'] = 0;
+	/* Field: Content: Edit link */
+	$handler->display->display_options['fields']['edit_node']['id'] = 'edit_node';
+	$handler->display->display_options['fields']['edit_node']['table'] = 'views_entity_node';
+	$handler->display->display_options['fields']['edit_node']['field'] = 'edit_node';
+	$handler->display->display_options['fields']['edit_node']['label'] = 'Edit';
+	/* Field: Content: Delete link */
+	$handler->display->display_options['fields']['delete_node']['id'] = 'delete_node';
+	$handler->display->display_options['fields']['delete_node']['table'] = 'views_entity_node';
+	$handler->display->display_options['fields']['delete_node']['field'] = 'delete_node';
+	$handler->display->display_options['fields']['delete_node']['label'] = 'Delete';
+	$handler->display->display_options['defaults']['sorts'] = FALSE;
+	/* Sort criterion: Content: Title */
+	$handler->display->display_options['sorts']['title']['id'] = 'title';
+	$handler->display->display_options['sorts']['title']['table'] = 'node';
+	$handler->display->display_options['sorts']['title']['field'] = 'title';
+	$handler->display->display_options['defaults']['arguments'] = FALSE;
+	/* Contextual filter: Content: Type */
+	$handler->display->display_options['arguments']['type']['id'] = 'type';
+	$handler->display->display_options['arguments']['type']['table'] = 'node';
+	$handler->display->display_options['arguments']['type']['field'] = 'type';
+	$handler->display->display_options['arguments']['type']['default_action'] = 'empty';
+	$handler->display->display_options['arguments']['type']['default_argument_type'] = 'fixed';
+	$handler->display->display_options['arguments']['type']['summary']['number_of_records'] = '0';
+	$handler->display->display_options['arguments']['type']['summary']['format'] = 'default_summary';
+	$handler->display->display_options['arguments']['type']['summary_options']['items_per_page'] = '25';
+	$handler->display->display_options['arguments']['type']['limit'] = '0';
+	$handler->display->display_options['defaults']['filter_groups'] = FALSE;
+	$handler->display->display_options['defaults']['filters'] = FALSE;
+	/* Filter criterion: Content: Type */
+	$handler->display->display_options['filters']['type']['id'] = 'type';
+	$handler->display->display_options['filters']['type']['table'] = 'node';
+	$handler->display->display_options['filters']['type']['field'] = 'type';
+	$handler->display->display_options['filters']['type']['operator'] = 'not in';
+	$handler->display->display_options['filters']['type']['value'] = array(
+		'admin_panel' => 'admin_panel',
+		'article' => 'article',
+		'webform' => 'webform',
+	);
+	/* Filter criterion: Content: Title */
+	$handler->display->display_options['filters']['title']['id'] = 'title';
+	$handler->display->display_options['filters']['title']['table'] = 'node';
+	$handler->display->display_options['filters']['title']['field'] = 'title';
+	$handler->display->display_options['filters']['title']['operator'] = 'contains';
+	$handler->display->display_options['filters']['title']['exposed'] = TRUE;
+	$handler->display->display_options['filters']['title']['expose']['operator_id'] = 'title_op';
+	$handler->display->display_options['filters']['title']['expose']['label'] = 'Title';
+	$handler->display->display_options['filters']['title']['expose']['operator'] = 'title_op';
+	$handler->display->display_options['filters']['title']['expose']['identifier'] = 'title';
+	$handler->display->display_options['filters']['title']['expose']['remember_roles'] = array(
+		2 => '2',
+		1 => 0,
+		3 => 0,
+		4 => 0,
+	);
+	$handler->display->display_options['path'] = 'content-manage/%/%';
+	
+	/* Display: User Dashboard */
+	$handler = $view->new_display('page', 'User Dashboard', 'page_1');
+	$handler->display->display_options['defaults']['title'] = FALSE;
+	$handler->display->display_options['title'] = 'User Dashboard';
+	$handler->display->display_options['defaults']['css_class'] = FALSE;
+	$handler->display->display_options['css_class'] = 'user-dashboard';
+	$handler->display->display_options['defaults']['access'] = FALSE;
+	$handler->display->display_options['access']['type'] = 'perm';
+	$handler->display->display_options['access']['perm'] = 'site admin';
+	$handler->display->display_options['defaults']['sorts'] = FALSE;
+	/* Sort criterion: Content: Title */
+	$handler->display->display_options['sorts']['title']['id'] = 'title';
+	$handler->display->display_options['sorts']['title']['table'] = 'node';
+	$handler->display->display_options['sorts']['title']['field'] = 'title';
+	$handler->display->display_options['path'] = 'user-dashboard';
+
+  $export['user_dashboard'] = $view;
+  return $export;
+
+}
+
+///**
+// * List option callback for countries.
+// */
+//function purple_predefined_list_option_countries() {
+//  include_once DRUPAL_ROOT . '/includes/locale.inc';
+//  return country_get_list();
+//}
+//
+///**
+// * List option callback for timezones.
+// */
+//function purple_predefined_list_option_timezones() {
+//  return system_time_zones();
+//}
+
+//###################################- Styles -#######################################//
+/**
+ * Implements hook_image_default_styles().
+ */
+function user_dashboard_image_default_styles() {
+  $styles = array();
+
+  // Exported image style: user_dashboard.
+  $styles['user_dashboard'] = array(
+    'name' => 'user_dashboard',
+    'effects' => array(
+      array(
+        'label' => 'Scale and crop',
+        'help' => 'Scale and crop will maintain the aspect-ratio of the original image, then crop the larger dimension. This is most useful for creating perfectly square thumbnails without stretching the image.',
+        'effect callback' => 'image_scale_and_crop_effect',
+        'dimensions callback' => 'image_resize_dimensions',
+        'form callback' => 'image_resize_form',
+        'summary theme' => 'image_resize_summary',
+        'module' => 'image',
+        'name' => 'image_scale_and_crop',
+        'data' => array(
+          'width' => 60,
+          'height' => 60,
+        ),
+        'weight' => 1,
+      ),
+    ),
+  );
+
+  return $styles;
+}

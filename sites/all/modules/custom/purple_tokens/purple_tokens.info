@@ -1,0 +1,7 @@
+name = Purple Tokens
+description = A module with a couple tokens
+core = 7.x
+version = 7.x-1.0
+package = Purple Customize
+dependencies[] = token
+

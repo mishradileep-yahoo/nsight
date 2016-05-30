@@ -1,0 +1,55 @@
+	/** partner page popup with slide effect */
+.page-partners .inside-wrapper {position: static;}
+.real_custLogo{ width:600px; display: inline-block;  margin:0px 0 0 40px !important;}
+.real_custLogo li{ float:left; list-style:none; /*border:1px dotted #666;*/ margin-left:40px; }
+.clnt_ttl { display: none; }
+
+.logoSliderDiv { background-color: #FFF; box-shadow: 1px 1px 6px 2px #000; position: absolute; text-align: justify; display:none; left: 0px;top: 0px;z-index:6;}
+.actArrow { display:block; margin-top:-12px; position:absolute; }
+.real_custLogo  li { cursor: pointer; height: 100px; position: relative; width: 170px; }
+.real_custLogo  li  img, .real_custLogo  li  div.clnt_ttl { background-color:#FFF; position: absolute; } /* vertical-align: middle; */
+.clnt_ttl { float: right; height: 190px; overflow: auto; padding: 10px; width: 1px; }
+.clnt_ttl p { font-size:13px; left: -310px; padding: 0; position: relative; width: 300px; }
+.closeBtn { cursor: pointer; left: 340px; position: relative; top: -14px; }
+
+.real_custLogo div.field-content{position: relative; height: 100%; }
+.real_custLogo div.field-content .viewDetailArrow{position: absolute; cursor: pointer; display: none; right: 10px; bottom: 10px;}
+
+.page-partners .column {position: static;}
+.real_custLogo li{ float:left; list-style:none; /*border:1px dotted #666;*/ margin:25px;}
+.clnt_ttl { display: none; }
+
+.actArrow { display:block; margin-top:-12px; position:absolute; }
+.real_custLogo  li { cursor: pointer; height: 100px; position: relative; width: 170px; }
+.real_custLogo  li  img, .real_custLogo  li  div.clnt_ttl { background-color:#FFF; position: absolute; }
+.clnt_ttl { float: right; height: 190px; overflow: auto; padding: 10px; width: 1px; }
+.clnt_ttl p { font-size:13px; left: -310px; padding: 0; position: relative; width: 300px; }
+.closeBtn { cursor: pointer; left: 340px; position: relative; top: -14px; }
+
+.real_custLogo div.field-content{position: relative; height: 100%;}
+.real_custLogo div.field-content .viewDetailArrow{position: absolute; cursor: pointer; display: none; right: 10px; bottom: 10px;}
+
+
+.real_custLogo li{ float:left; list-style:none; border:1px dotted #666; margin:5px; opacity: 1 !important}
+.clnt_ttl { float: right;/* height: 190px;*/ overflow: auto !important; padding: 10px; /*width: 1px;*/ height:auto;  }
+.leaderLinded { line-height:28px;}
+.clnt_ttl h3 { font-size:16px; margin:0; padding:0; color:#027fd8; font-weight:700;}
+.clnt_ttl h2 { font-size:14px; margin:0; padding:0 0 10px 0; line-height:20px;}
+.clnt_ttl p { font-size:14px; left: 0px; padding: 0; position: relative; width: 380px; line-height:20px; }
+.logoSliderDiv  { text-align:left; line-height:1.2;}
+.logoSliderDiv p { display:none;}
+.logoSliderDiv .clnt_ttl p { display:block; line-height:24px; }
+
+.closeBtn { cursor: pointer; left: auto; position: absolute; top: -15px;  right:-15px }
+.real_custLogo li { width:173px; height:200px; margin:5px 15px 5px 5px}
+.viewDetailArrow { cursor:pointer; right:0px;  bottom:0px;}
+.real_custLogo li p, .real_custLogo .imgarr h3{ position:absolute; line-height:1.1; margin:0; bottom:0; font-size:0.9em; top:173px; padding-left:5px;}
+.logoSliderDiv img { margin-top:5px;}
+.logoSliderDiv h1 { font-size:18px; margin:0; padding:0; line-height:40px; font-weight:700; color:#027fd8; }
+.ui-accordionTxt { padding-right:5px;}
+.linkedin {}
+.linkedin img { float:left; border:0px; margin:0px 10px 0px 0px !important}
+
+.logoSliderDiv .imgarr h3{display: none;}
+
+	/** partner page popup with slide effect */

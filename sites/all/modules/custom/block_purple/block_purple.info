@@ -1,0 +1,15 @@
+name = Block Purple
+description = Provides a Block Management.
+core = 7.x
+version = 7.x-1.0
+package = Purple Customize
+
+dependencies[] = image
+dependencies[] = link
+dependencies[] = list
+dependencies[] = text
+dependencies[] = options
+dependencies[] = ctools
+dependencies[] = views
+dependencies[] = media
+dependencies[] = nodeblock

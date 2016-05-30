@@ -1,0 +1,3 @@
+.filter-wrapper, .field-edit-link, .filter-guidelines, .filter-help, #edit-menu #edit-menu-options-attributes, #edit-menu .form-item-menu-weight, #menu-edit-item #edit-options-attributes, .page-admin-structure-menu-manage .tabs, .page-admin-structure-menu-manage #overlay-tabs{
+  display:none;
+}
